@@ -34,9 +34,7 @@ module.exports = {
 		// https://go.nuxtjs.dev/pwa
 		'@nuxtjs/pwa',
 		// https://go.nuxtjs.dev/content
-		'@nuxt/content',
-
-		'~/io',
+		'@nuxt/content'
 	],
 
 	// Axios module configuration (https://go.nuxtjs.dev/config-axios)

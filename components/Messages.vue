@@ -3,7 +3,8 @@
     <div class="items">
       <div
         class="item"
-        v-for="(message, indexMessage) in messages"
+        :class="{ me: message.from.hash == user.hash }"
+        v-for="(message, indexMessage) in itemsFiltered"
         :key="indexMessage"
       >
         <div class="avatar">
@@ -44,47 +45,44 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from "nuxt-property-decorator";
-import socket from "~/plugins/socket.io.js";
 
 @Component({})
 export default class Messages extends Vue {
+  @Prop({ type: Object, default: () => {} })
+  oponent!: string[];
+
+  @Prop({ type: Object, default: () => {} })
+  user!: string[];
+
+  @Prop({ type: Array, default: () => [] })
+  items!: string[];
+
   name = "Messages";
   message = "";
-  messages = [
-    {
-      from: {
-        name: "Alex Kovalchuk",
-        avatar: "//placehold.it/100x100?text=AK",
-      },
-      to: {
-        name: "Jura Siroduk",
-        avatar: "//placehold.it/100x100?text=JS",
-      },
-      message: "hello world",
-    },
-  ];
+
+  get itemsFiltered() {
+    return this.items.filter((item) => {
+      return (
+        (item.from.hash == this.oponent.hash &&
+          item.to.hash == this.user.hash) ||
+        (item.to.hash == this.oponent.hash && item.from.hash == this.user.hash)
+      );
+    });
+  }
 
   sendMessage() {
-    if (!this.message.trim()) {
+    if (!this.message.trim() || !Object.keys(this.oponent).length) {
       return;
     }
     const message = {
       date: new Date().toJSON(),
-      from: {
-        name: "Alex Kovalchuk",
-        avatar: "//placehold.it/100x100?text=AK",
-      },
-      to: {
-        name: "Jura Siroduk",
-        avatar: "//placehod.it/100x100?text=JS",
-      },
+      from: this.user,
+      to: this.oponent,
       message: this.message.trim(),
     };
 
-    this.messages = [...this.messages, message];
-
     this.message = "";
-    socket.emit("send-message", message);
+    this.$emit("send", message);
   }
 }
 </script>
@@ -115,6 +113,10 @@ export default class Messages extends Vue {
       align-items: center;
       width: fit-content;
       font-size: 12px;
+
+      &.me {
+        margin-left: auto;
+      }
 
       .avatar {
         border-radius: 50%;

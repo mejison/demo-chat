@@ -1,6 +1,12 @@
 <template>
   <div class="users">
-    <div class="user-item" v-for="(user, indexUser) in items" :key="indexUser">
+    <div
+      class="user-item"
+      :class="{ active: indexUser == active }"
+      v-for="(user, indexUser) in items"
+      :key="indexUser"
+      @click="onClickUser(user, indexUser)"
+    >
       <div class="avatar">
         <img :src="user.avatar" alt="alt" />
       </div>
@@ -18,6 +24,13 @@ import { Vue, Component, Prop } from "nuxt-property-decorator";
 export default class Users extends Vue {
   @Prop({ type: Array, default: () => [] })
   items!: string[];
+
+  active = null;
+
+  onClickUser(user, index) {
+    this.active = index;
+    this.$emit("select", user);
+  }
 }
 </script>
 
@@ -36,10 +49,18 @@ export default class Users extends Vue {
   .user-item {
     border-bottom: 1px solid #eee;
     padding: 15px;
-    margin-bottom: 15px;
     padding-bottom: 15px;
     display: flex;
     align-items: center;
+    cursor: pointer;
+
+    &.active {
+      background: #ddd;
+    }
+
+    &:hover {
+      opacity: 0.9;
+    }
 
     .avatar {
       width: 45px;
