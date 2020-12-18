@@ -16,11 +16,13 @@
     "@nuxtjs/dotenv": "^1.4.1",
     "@nuxtjs/pwa": "^3.3.2",
     "core-js": "^3.6.5",
+    "express": "^4.14.0",
     "nuxt": "^2.14.6",
     "nuxt-property-decorator": "^2.8.8",
+    "sass": "^1.30.0",
+    "sass-loader": "^10.1.0",
     "socket.io": "^3.0.4",
-    "socket.io-client": "^3.0.4",
-    "express": "^4.14.0"
+    "socket.io-client": "^3.0.4"
   },
   "devDependencies": {
     "@nuxt/types": "^2.14.6",
