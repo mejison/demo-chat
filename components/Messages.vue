@@ -1,6 +1,6 @@
 <template>
   <div class="messages">
-    <div class="items">
+    <div class="items" ref="messages">
       <div
         class="item"
         :class="{ me: message.from.hash == user.hash }"
@@ -13,6 +13,12 @@
         <p>
           {{ message.message }}
         </p>
+      </div>
+      <div class="empty-opponent" v-if="!existOponent">
+        Please choose an opponent
+      </div>
+      <div class="empty-messages" v-if="!existMessages && existOponent">
+        No messages yet
       </div>
     </div>
     <div class="sender">
@@ -49,10 +55,10 @@ import { Vue, Component, Prop } from "nuxt-property-decorator";
 @Component({})
 export default class Messages extends Vue {
   @Prop({ type: Object, default: () => {} })
-  oponent!: string[];
+  oponent!: any;
 
   @Prop({ type: Object, default: () => {} })
-  user!: string[];
+  user!: any;
 
   @Prop({ type: Array, default: () => [] })
   items!: string[];
@@ -60,14 +66,29 @@ export default class Messages extends Vue {
   name = "Messages";
   message = "";
 
+  get existOponent() {
+    return Object.keys(this.oponent).length;
+  }
+
+  get existMessages() {
+    return this.itemsFiltered.length;
+  }
+
   get itemsFiltered() {
-    return this.items.filter((item) => {
+    return this.items.filter((item: any) => {
       return (
         (item.from.hash == this.oponent.hash &&
           item.to.hash == this.user.hash) ||
         (item.to.hash == this.oponent.hash && item.from.hash == this.user.hash)
       );
     });
+  }
+
+  scrollToDown() {
+    const el = this.$refs.messages as HTMLFormElement;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
   }
 
   sendMessage() {
@@ -83,6 +104,9 @@ export default class Messages extends Vue {
 
     this.message = "";
     this.$emit("send", message);
+    this.$nextTick(() => {
+      this.scrollToDown();
+    });
   }
 }
 </script>
@@ -103,6 +127,7 @@ export default class Messages extends Vue {
   .items {
     padding: 30px;
     overflow: auto;
+    height: 100%;
 
     .item {
       padding: 5px 35px 5px 10px;
@@ -132,6 +157,16 @@ export default class Messages extends Vue {
           height: 100%;
         }
       }
+    }
+
+    .empty-opponent,
+    .empty-messages {
+      display: flex;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #999;
     }
   }
 

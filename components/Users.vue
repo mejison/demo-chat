@@ -14,6 +14,9 @@
         {{ user.name }}
       </div>
     </div>
+    <div class="empty" v-if="!items.length">
+      There are no connected opponents yet
+    </div>
   </div>
 </template>
 
@@ -45,6 +48,16 @@ export default class Users extends Vue {
   max-width: 250px;
   min-width: 250px;
   overflow: auto;
+
+  .empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+    padding: 20px;
+    text-align: center;
+  }
 
   .user-item {
     border-bottom: 1px solid #eee;

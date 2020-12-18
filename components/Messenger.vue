@@ -20,9 +20,9 @@ export default class Messanger extends Vue {
 
   users = [];
 
-  user = {};
+  user: any = {};
 
-  oponent = {};
+  oponent: any = {};
 
   messages = [];
 
@@ -32,25 +32,25 @@ export default class Messanger extends Vue {
 
   onSend(message) {
     this.messages = [...this.messages, message];
-    socket.emit("send-message", message);
+    socket.messages.emit("send-message", message);
   }
 
   beforeMount() {
-    socket.emit("get-all-members", (members) => {
+    socket.members.emit("get-all-members", (members) => {
       this.users = members
         .filter((user) => user.hash)
         .filter((user) => user.hash != this.user.hash);
     });
 
-    socket.emit("get-all-messages", (messages) => {
+    socket.messages.emit("get-all-messages", (messages) => {
       this.messages = messages;
     });
 
-    socket.on("new-message", (message) => {
+    socket.messages.on("new-message", (message) => {
       this.messages = [...this.messages, message];
     });
 
-    socket.on("new-user", (user) => {
+    socket.members.on("new-user", (user) => {
       const exist = this.users.find((member) => member.hash == user.hash);
       if (!exist) {
         this.users = [...this.users, user];
@@ -71,7 +71,7 @@ export default class Messanger extends Vue {
         .join("");
 
       const newUser = JSON.stringify({
-        hash: new Date() * 1,
+        hash: Number(new Date()),
         name: username,
         avatar: `//placehold.it/100x100?text=${abbr}`,
       });
@@ -80,7 +80,7 @@ export default class Messanger extends Vue {
 
     const member = JSON.parse(user || newUser);
     this.user = member;
-    socket.emit("join-user", member);
+    socket.members.emit("join-user", member);
   }
 }
 </script>

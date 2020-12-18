@@ -24,27 +24,4 @@ server.listen(port, '0.0.0.0')
 console.log('Server listening on localhost:' + port) // eslint-disable-line no-console
 
 // Socket.io
-let members = [];
-let messages = [];
-io.on('connection', (socket) => {
-    socket.on('get-all-members', function (fn) {
-        fn(members)
-    });
-
-    socket.on('get-all-messages', function (fn) {
-        fn(messages)
-    });
-
-    socket.on('send-message', function (message) {
-        socket.broadcast.emit('new-message', message)
-        messages = [...messages, message];
-    });
-
-    socket.on('join-user', function (user) {
-        const exist = members.find((member) => member.hash == user.hash);
-        if (!exist) {
-            members = [...members, user];
-            socket.broadcast.emit('new-user', user);
-        }
-    });
-})
+require('./io/index.js')(io)
